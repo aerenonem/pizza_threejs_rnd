@@ -8,11 +8,16 @@
 	</head>
 
 	<body>
+		<section id="loading-screen">
+
+			<div id="loader"></div>
+	
+		</section>
 		<div id="mainContainer">
 			<div id="container">
 				<button id='pepperoni' class='animationButton'>PEPPERONI</a>
 				<button id='basil' class='animationButton1'>BASIL</a>
-				<button id='pineapple' class='animationButton2'>PINEAPPLE</a>
+				<button id='pineapple' class='animationButton2'>RESET</a>
 			</div>
 			<button id='ar' class='animationButton4' onclick="window.open('https://qreal3d.8thwall.app/pizza')">VIEW IN AR</a>
 		  </div>
@@ -61,6 +66,15 @@
 					console.log("pc")
 				}
 			}
+			const loadingManager = new THREE.LoadingManager( () => {
+	
+				const loadingScreen = document.getElementById( 'loading-screen' );
+				loadingScreen.classList.add( 'fade-out' );
+				
+				// optional: remove loader from DOM via event listener
+				loadingScreen.addEventListener( 'transitionend', onTransitionEnd );
+				
+			} );
 			init();
 			render();
 
@@ -92,7 +106,7 @@
 				light.shadow.camera.near = 0.5; // default
 				light.shadow.camera.far = 500; // default
 			
-				new RGBELoader()
+				new RGBELoader(loadingManager)
 					.setPath( '' )
 					.load( 'belfast_sunset_1k.hdr', function ( texture ) {
 
@@ -108,7 +122,7 @@
 						// model
 						const GLT=null
 						
-						const loader = new GLTFLoader().setPath( 'model/' );
+						const loader = new GLTFLoader(loadingManager).setPath( 'model/' );
 						loader.load( 'pizza.glb', function ( GLT ) {
 							GLT.scene.traverse((o) => {
 							if (o.isMesh) {
@@ -254,6 +268,11 @@
 			function render() {
 
 				renderer.render( scene, camera );
+
+			}
+			function onTransitionEnd( event ) {
+
+			event.target.remove();
 
 			}
 
